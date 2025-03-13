@@ -9,8 +9,8 @@ st.set_page_config(page_title="Bike Sharing Dashboard", layout="wide")
 # Load dataset
 @st.cache
 def load_data():
-    day_df = pd.read_csv("C:/Users/andhi/OneDrive/Dokumen/submission/data/day.csv")
-    hour_df = pd.read_csv("C:/Users/andhi/OneDrive/Dokumen/submission/data/hour.csv")
+    day_df = pd.read_csv("day.csv")
+    hour_df = pd.read_csv("hour.csv")
     
     # Mengubah kolom 'dteday' menjadi datetime
     day_df['dteday'] = pd.to_datetime(day_df['dteday'])
