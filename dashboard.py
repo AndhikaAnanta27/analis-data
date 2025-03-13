@@ -9,8 +9,8 @@ st.set_page_config(page_title="Bike Sharing Dashboard", layout="wide")
 # Load dataset
 @st.cache
 def load_data():
-    day_df = pd.read_csv("day.csv")
-    hour_df = pd.read_csv("hour.csv")
+    day_df = pd.read_csv("C:/Users/andhi/OneDrive/Dokumen/submission/data/day.csv")
+    hour_df = pd.read_csv("C:/Users/andhi/OneDrive/Dokumen/submission/data/hour.csv")
     
     # Mengubah kolom 'dteday' menjadi datetime
     day_df['dteday'] = pd.to_datetime(day_df['dteday'])
@@ -42,9 +42,17 @@ if menu == "Overview":
 # Seksi Analisis Musim
 elif menu == "Analisis Musim":
     st.header("📈 Analisis Musim")
+    
+    # Menambahkan fitur filter untuk memilih musim (season)
+    season_filter = st.selectbox("Pilih Musim", ['All', 'Spring', 'Summer', 'Fall', 'Winter'])
+
     # Pemetaan kode musim ke label
     season_labels = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
     day_df['season'] = day_df['season'].map(season_labels)
+
+    # Filter data berdasarkan musim yang dipilih
+    if season_filter != 'All':
+        day_df = day_df[day_df['season'] == season_filter]
 
     # Mengelompokkan data berdasarkan musim untuk menghitung jumlah penyewa
     season_counts = day_df.groupby('season')['cnt'].sum()
@@ -62,8 +70,16 @@ elif menu == "Analisis Musim":
 # Seksi Perbandingan Pengguna
 elif menu == "Perbandingan Pengguna":
     st.header("💼 Pengguna Terdaftar vs Kasual")
+    
+    # Menambahkan fitur filter untuk memilih rentang tanggal
+    start_date = st.date_input("Pilih Tanggal Mulai", min_value=day_df['dteday'].min(), max_value=day_df['dteday'].max())
+    end_date = st.date_input("Pilih Tanggal Selesai", min_value=day_df['dteday'].min(), max_value=day_df['dteday'].max())
+
+    # Filter data berdasarkan rentang tanggal
+    filtered_day_df = day_df[(day_df['dteday'] >= pd.to_datetime(start_date)) & (day_df['dteday'] <= pd.to_datetime(end_date))]
+
     # Mengelompokkan data berdasarkan bulan untuk menghitung total pengguna kasual dan terdaftar
-    monthly_data = hour_df.groupby('mnth').agg({
+    monthly_data = filtered_day_df.groupby('mnth').agg({
         'casual': 'sum',
         'registered': 'sum',
         'cnt': 'sum'
